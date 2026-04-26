@@ -404,8 +404,106 @@ body {
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: .85rem 1.5rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
 }
+
+/* ============================================================
+   SEARCH BAR
+   ============================================================ */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: .85rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: .88rem;
+  padding: .65rem .85rem .65rem 2.55rem;
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  /* Remove native search X on webkit */
+  -webkit-appearance: none;
+}
+
+.search-input::placeholder { color: var(--text-muted); opacity: .7; }
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.18);
+}
+
+/* Hide native clear button in webkit */
+.search-input::-webkit-search-cancel-button { display: none; }
+
+.search-clear {
+  position: absolute;
+  right: .6rem;
+  background: rgba(255,255,255,.08);
+  border: none;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: .25rem .3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+
+.search-clear:hover { background: rgba(239,68,68,.15); color: #f87171; }
+
+.search-count {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .32rem .7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.search-count.has-results { color: var(--accent-2); border-color: rgba(99,102,241,.3); }
+.search-count.no-results  { color: #f87171; border-color: rgba(239,68,68,.3); }
+
+/* Light mode */
+body.light .search-input { background: rgba(0,0,0,.04); }
+body.light .search-clear  { background: rgba(0,0,0,.06); }
+
+/* Date input dark mode fix */
+input[type="date"] {
+  color-scheme: dark;
+}
+body.light input[type="date"] {
+  color-scheme: light;
+}
+
+
 
 .stat-item {
   display: flex;
@@ -1469,31 +1567,260 @@ body.light .ocr-drop-area:hover { background: rgba(99,102,241,.08); }
 body.light .ocr-preview-wrap { background: rgba(0,0,0,.06); }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE — Mobile-first
    ============================================================ */
+
+/* ── 640 px and below ─────────────────────────────────────── */
 @media (max-width: 640px) {
-  .header-inner { padding: 0 1rem; }
-  .main-content  { padding: 1.2rem 1rem 3rem; }
-  .cards-grid    { grid-template-columns: 1fr; }
-  .stats-bar     { gap: .9rem; padding: .75rem 1rem; flex-wrap: wrap; }
-  .stat-value    { font-size: 1.2rem; }
-  .modal-box     { padding: 1.2rem; }
+
+  /* Base */
+  html { font-size: 15px; }
+
+  /* ── Header ── */
+  .header-inner {
+    padding: 0 .85rem;
+    height: 56px;
+    gap: .5rem;
+  }
+
+  .header-logo span { font-size: 1rem; }
+
+  .header-actions { gap: .4rem; }
+
+  /* Hide text labels on secondary buttons */
+  .btn-secondary span,
+  #btn-export-csv span,
+  #btn-change-file span { display: none; }
+
+  /* Make secondary buttons icon-only squares */
+  .btn-secondary {
+    padding: .45rem .55rem;
+    min-width: 36px;
+    justify-content: center;
+  }
+
+  /* Primary "Novo Cartão" stays readable but tighter */
+  #btn-add-card { padding: .45rem .75rem; font-size: .8rem; }
+
+  /* File status badge hidden on mobile — too narrow */
+  .file-status { display: none; }
+
+  /* ── Main content ── */
+  .main-content { padding: 1rem .85rem 5rem; }
+
+  /* ── Stats bar — 2-column grid ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem .5rem;
+    padding: .75rem .9rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+
+  /* Hide vertical dividers — replaced by grid gaps */
+  .stat-divider { display: none; }
+
+  /* Toggle hidden btn spans full bottom row */
+  #btn-toggle-hidden {
+    grid-column: 1 / -1;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+    padding-top: .5rem;
+    margin-top: .1rem;
+    font-size: .78rem;
+  }
+
+  .stat-value { font-size: 1.1rem; }
+  .stat-label { font-size: .62rem; }
+
+  /* ── Section header ── */
+  .section-header { margin-bottom: .9rem; flex-wrap: nowrap; }
+  .section-title { font-size: .95rem; margin-bottom: 0; }
+
+  /* View toggle — keep but tighter */
+  .view-btn { padding: .32rem .55rem; font-size: .72rem; }
+  .view-btn span { display: none; } /* icon only */
+
+  /* ── Cards grid ── */
+  .cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  /* ── Card visual ── */
+  .credit-card { border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .card-number-display { font-size: 1rem; letter-spacing: .18em; }
+  .card-value { font-size: .75rem; }
+
+  /* ── Card meta ── */
+  .card-meta { padding: .75rem .9rem; gap: .5rem; }
+  .meta-value { font-size: .78rem; }
+  .meta-label { font-size: .6rem; }
+
+  /* ── Card actions — icon + tiny label ── */
+  .card-actions { padding: .55rem .9rem; gap: .4rem; flex-wrap: wrap; }
+
+  .action-btn {
+    padding: .32rem .55rem;
+    font-size: .7rem;
+    gap: .28rem;
+    border-radius: 6px;
+  }
+
+  /* ── Modal — slide up from bottom, full width ── */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-box {
+    border-radius: 22px 22px 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 95vh;
+    padding: 1.2rem 1rem 1.5rem;
+  }
+
+  /* Preview card inside modal smaller */
+  .preview-card { max-width: 280px; }
+
+  /* Form inputs — bigger touch targets */
+  input, textarea, select {
+    padding: .7rem .85rem;
+    font-size: .9rem;
+    border-radius: 10px;
+  }
+
+  label { font-size: .7rem; }
+
+  .form-row { gap: .6rem; }
+
+  /* cols-3 becomes cols-2 + 1 */
   .form-row.cols-3 { flex-wrap: wrap; }
+  .form-row.cols-3 .form-group:last-child { flex: 0 0 100%; }
+
+  .form-actions { flex-direction: row; }
+  .form-actions .btn-secondary { flex: 0 0 auto; }
+  .form-actions .btn-primary   { flex: 1; justify-content: center; }
+
+  /* ── OCR zone on mobile ── */
+  .ocr-drop-area { min-height: 80px; padding: .9rem .75rem; }
+  .ocr-drop-text { font-size: .78rem; }
+
+  .cam-viewport { aspect-ratio: 4/3; } /* squarer on phones */
+
+  .cam-controls { justify-content: center; }
+
+  /* ── List view → disabled on mobile (too cramped), force grid ── */
+  .cards-grid.list-view {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 
   .cards-grid.list-view .card-wrapper {
-    grid-template-columns: 90px 1fr;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
   }
-  .cards-grid.list-view .card-wrapper .credit-card { width: 90px; min-width: 90px; }
-  .cards-grid.list-view .card-wrapper .card-actions {
-    grid-column: 1 / -1;
-    border-left: none;
+
+  .cards-grid.list-view .card-wrapper .credit-card {
+    width: 100%;
+    min-width: unset;
+    border-radius: 0;
+    aspect-ratio: 85.6 / 54;
+    padding: 1.1rem 1.2rem;
+  }
+
+  .cards-grid.list-view .card-wrapper .credit-card .card-top,
+  .cards-grid.list-view .card-wrapper .credit-card .card-bottom { display: flex; }
+
+  .cards-grid.list-view .card-wrapper .credit-card .card-number-display {
+    font-size: 1rem;
+    letter-spacing: .18em;
+    writing-mode: horizontal-tb;
+    height: auto;
+    margin: .1rem 0;
+  }
+
+  .cards-grid.list-view .card-wrapper .credit-card::after { display: block; }
+
+  .cards-grid.list-view .card-meta {
+    padding: .75rem .9rem;
+    flex-direction: column;
+    gap: .5rem;
+  }
+
+  .cards-grid.list-view .card-meta-row { flex-wrap: wrap; }
+
+  .cards-grid.list-view .card-actions {
     border-top: 1px solid var(--border);
+    border-left: none;
     flex-direction: row;
+    padding: .55rem .9rem;
+    flex-wrap: wrap;
   }
+
+  /* ── Toast ── */
+  .toast {
+    bottom: 1rem;
+    font-size: .8rem;
+    padding: .55rem 1rem;
+    max-width: calc(100vw - 2rem);
+    white-space: normal;
+    text-align: center;
+  }
+
+  /* ── Onboard ── */
+  .onboard-box { padding: 2rem 1.25rem; border-radius: 20px; }
+
+  /* ── Empty state ── */
+  .empty-state { padding: 2rem .5rem; }
+  .empty-state p { font-size: .85rem; }
 }
 
-@media (max-width: 400px) {
-  .header-actions .btn-secondary span { display: none; }
-  .view-btn span { display: none; }
+/* ── 480 px and below ─────────────────────────────────────── */
+@media (max-width: 480px) {
+
+  /* Even tighter header */
+  .header-inner { height: 52px; }
+
+  /* Stats — 2 cols but smaller */
+  .stats-bar { padding: .65rem .75rem; gap: .5rem .4rem; }
+  .stat-value { font-size: 1rem; }
+
+  /* Card meta rows stack */
+  .card-meta-row { flex-direction: column; gap: .35rem; }
+
+  /* Form rows all stack */
+  .form-row { flex-direction: column; gap: .55rem; }
+  .form-row.cols-3 { flex-direction: row; flex-wrap: wrap; }
+  .form-row.cols-3 .form-group { flex: 1 1 40%; min-width: 0; }
+  .form-row.cols-3 .form-group:last-child { flex: 0 0 100%; }
+
+  /* Preview card even more compact */
+  .preview-card { max-width: 240px; }
+  .card-number-display { font-size: .92rem; letter-spacing: .14em; }
+
+  /* Action buttons — icon only on very small screens */
+  .action-btn span { display: none; }
+  .action-btn { padding: .38rem .5rem; }
+
+  /* OCR tabs text tighter */
+  .ocr-tab { font-size: .72rem; padding: .32rem .4rem; }
 }
+
+/* ── 360 px and below ─────────────────────────────────────── */
+@media (max-width: 360px) {
+  html { font-size: 14px; }
+
+  .header-logo span { display: none; } /* icon only logo */
+
+  .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  #btn-toggle-hidden { grid-column: 1 / -1; }
+
+  .stat-value { font-size: .9rem; }
+  .stat-label { font-size: .58rem; }
+
+  .modal-box { padding: 1rem .85rem 1.2rem; }
+
+  .card-number-display { font-size: .82rem; letter-spacing: .1em; }
+}
+

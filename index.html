@@ -115,6 +115,28 @@
       </button>
     </section>
 
+    <!-- Search bar -->
+    <div class="search-bar" id="search-bar">
+      <div class="search-input-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          id="search-input"
+          class="search-input"
+          placeholder="Buscar por nome ou 4 últimos dígitos…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Buscar cartão"
+        />
+        <button class="search-clear" id="search-clear" aria-label="Limpar busca" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <span class="search-count" id="search-count" style="display:none"></span>
+    </div>
+
     <!-- Active Cards -->
     <section class="cards-section" id="section-active">
       <div class="section-header">
@@ -326,6 +348,13 @@
           <div class="form-group">
             <label for="f-limit">Limite Total (US$)</label>
             <input type="text" id="f-limit" placeholder="0.00" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-received">Data de Recebimento</label>
+            <input type="date" id="f-received" />
           </div>
         </div>
 

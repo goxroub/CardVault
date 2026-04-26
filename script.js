@@ -98,6 +98,9 @@ const hiddenToggleLabel = $('hidden-toggle-label');
 const viewGridBtn = $('view-grid-btn');
 const viewListBtn = $('view-list-btn');
 const toast       = $('toast');
+const searchInput = $('search-input');
+const searchClear = $('search-clear');
+const searchCount = $('search-count');
 
 // ─── File System Access ──────────────────────────────────────
 const OPTS_OPEN = { types: [{ description: 'CardVault JSON', accept: { 'application/json': ['.json'] } }], multiple: false };
@@ -356,11 +359,11 @@ function buildCardHTML(c){
   const limHTML=limUsd!==null?escHtml(fmtUsd(limUsd)):'—';
   const limBrl=usdRate&&limUsd!==null?`<span class="brl-badge">≈${fmtBrl(limUsd*usdRate)}</span>`:'';
   const notesHTML=c.notes?`<div class="card-meta-row"><div class="meta-field" style="flex:1"><span class="meta-label">Observações</span><span class="meta-value">${escHtml(c.notes)}</span></div></div>`:'';
-  const copyBtn=`<button class="action-btn copy" onclick="copyNumber('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar nº</button>`;
-  const editBtn=`<button class="action-btn edit" onclick="openModal('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button>`;
-  const hideBtn=`<button class="action-btn hide" onclick="hideCard('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22"/></svg>Ocultar</button>`;
-  const restoreBtn=`<button class="action-btn restore" onclick="restoreCard('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Restaurar</button>`;
-  const deleteBtn=`<button class="action-btn hide" onclick="deleteCard('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>Excluir</button>`;
+  const copyBtn   =`<button class="action-btn copy"    onclick="copyNumber('${c.id}')"   title="Copiar n\u00famero" aria-label="Copiar n\u00famero"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copiar n\u00ba</span></button>`;
+  const editBtn   =`<button class="action-btn edit"    onclick="openModal('${c.id}')"   title="Editar" aria-label="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Editar</span></button>`;
+  const hideBtn   =`<button class="action-btn hide"    onclick="hideCard('${c.id}')"    title="Ocultar" aria-label="Ocultar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22"/></svg><span>Ocultar</span></button>`;
+  const restoreBtn=`<button class="action-btn restore" onclick="restoreCard('${c.id}')" title="Restaurar" aria-label="Restaurar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>Restaurar</span></button>`;
+  const deleteBtn =`<button class="action-btn hide"    onclick="deleteCard('${c.id}')"  title="Excluir" aria-label="Excluir"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg><span>Excluir</span></button>`;
   const actions=c.hidden?`${restoreBtn}${deleteBtn}`:`${copyBtn}${editBtn}${hideBtn}`;
 
   // Eye toggle SVGs
@@ -409,15 +412,59 @@ function applyViewMode(){
   localStorage.setItem('cv_view', viewMode);
 }
 
+// ─── Search filter ────────────────────────────────────────────
+function getSearchQuery() {
+  return (searchInput?.value || '').trim().toLowerCase();
+}
+
+function matchesSearch(card, query) {
+  if (!query) return true;
+  const name   = (card.name   || '').toLowerCase();
+  const digits = (card.number || '').replace(/\s/g, '').slice(-4);
+  return name.includes(query) || digits.includes(query);
+}
+
 function render(){
-  const active=cards.filter(c=>!c.hidden), hidden=cards.filter(c=>c.hidden);
-  statTotal.textContent=cards.length; statActive.textContent=active.length; statHidden.textContent=hidden.length;
-  if(active.length===0){ activeGrid.innerHTML=''; activeGrid.appendChild(emptyActive); emptyActive.classList.remove('hidden'); }
-  else { emptyActive.classList.add('hidden'); activeGrid.innerHTML=active.map(buildCardHTML).join(''); }
-  if(hidden.length===0){ hiddenGrid.innerHTML=''; hiddenGrid.appendChild(emptyHidden); emptyHidden.classList.remove('hidden'); }
-  else { emptyHidden.classList.add('hidden'); hiddenGrid.innerHTML=hidden.map(buildCardHTML).join(''); }
-  hiddenToggleLabel.textContent=showingHidden?'Ocultar cartões usados':`Ver cartões ocultos${hidden.length?` (${hidden.length})`:''}`;
+  const query  = getSearchQuery();
+  const allActive = cards.filter(c=>!c.hidden);
+  const allHidden = cards.filter(c=>c.hidden);
+  const active = allActive.filter(c=>matchesSearch(c, query));
+  const hidden = allHidden.filter(c=>matchesSearch(c, query));
+
+  statTotal.textContent=cards.length; statActive.textContent=allActive.length; statHidden.textContent=allHidden.length;
+
+  // Active grid
+  if(active.length===0){
+    activeGrid.innerHTML='';
+    activeGrid.appendChild(emptyActive);
+    emptyActive.classList.remove('hidden');
+    emptyActive.querySelector('p').textContent = query
+      ? 'Nenhum cartão encontrado para "' + query + '"'
+      : 'Nenhum cartão cadastrado ainda.';
+  } else {
+    emptyActive.classList.add('hidden');
+    activeGrid.innerHTML=active.map(buildCardHTML).join('');
+  }
+
+  // Hidden grid
+  if(hidden.length===0){
+    hiddenGrid.innerHTML=''; hiddenGrid.appendChild(emptyHidden); emptyHidden.classList.remove('hidden');
+  } else {
+    emptyHidden.classList.add('hidden'); hiddenGrid.innerHTML=hidden.map(buildCardHTML).join('');
+  }
+
+  hiddenToggleLabel.textContent=showingHidden?'Ocultar cartões usados':`Ver cartões ocultos${allHidden.length?` (${allHidden.length})`:''}`;
   sectionHidden.classList.toggle('hidden',!showingHidden);
+
+  // Search result count
+  if (query) {
+    const total = active.length + (showingHidden ? hidden.length : 0);
+    searchCount.textContent = `${active.length} resultado${active.length!==1?'s':''} encontrado${active.length!==1?'s':''}`;
+    searchCount.style.display = '';
+  } else {
+    searchCount.style.display = 'none';
+  }
+
   applyViewMode(); renderTotals();
 }
 
@@ -433,6 +480,24 @@ modalCloseBtn.addEventListener('click',closeModal);
 btnCancel.addEventListener('click',closeModal);
 modalOverlay.addEventListener('click',e=>{if(e.target===modalOverlay)closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalOverlay.classList.contains('open'))closeModal();});
+
+// ─── Real-time search ─────────────────────────────────────────
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    const hasValue = searchInput.value.length > 0;
+    searchClear.style.display = hasValue ? '' : 'none';
+    render();
+  });
+}
+if (searchClear) {
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.style.display = 'none';
+    searchCount.style.display = 'none';
+    searchInput.focus();
+    render();
+  });
+}
 
 // Theme toggle
 btnTheme.addEventListener('click',()=>{
