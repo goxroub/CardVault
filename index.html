@@ -44,6 +44,20 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           <span>CSV</span>
         </button>
+        <!-- Theme toggle -->
+        <button id="btn-theme" class="btn-theme" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <!-- Sun icon (shown in light mode) -->
+          <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <!-- Moon icon (shown in dark mode) -->
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
         <button id="btn-add-card" class="btn-primary" disabled>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Novo Cartão
@@ -187,6 +201,83 @@
         </div>
       </div>
 
+      <!-- OCR Scan Zone -->
+      <div class="ocr-zone" id="ocr-zone">
+        <!-- Mode tabs -->
+        <div class="ocr-tabs" role="tablist">
+          <button class="ocr-tab active" id="ocr-tab-file" role="tab" aria-selected="true" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Arquivo
+          </button>
+          <button class="ocr-tab" id="ocr-tab-cam" role="tab" aria-selected="false" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Câmera ao vivo
+          </button>
+        </div>
+
+        <!-- ── FILE TAB ── -->
+        <div id="ocr-panel-file">
+          <input type="file" id="ocr-file-input" accept="image/*" style="display:none" />
+          <div class="ocr-drop-area" id="ocr-drop-area" role="button" tabindex="0" aria-label="Área para foto do cartão">
+            <div class="ocr-drop-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+            <p class="ocr-drop-text">Arraste uma foto do cartão ou <strong>clique para selecionar</strong></p>
+            <p class="ocr-drop-hint">Frente do cartão • JPG, PNG, WEBP</p>
+          </div>
+          <div class="ocr-preview-wrap" id="ocr-preview-wrap" style="display:none">
+            <img id="ocr-img-preview" class="ocr-img-preview" alt="Foto do cartão" />
+            <button type="button" class="ocr-clear-btn" id="ocr-clear-btn" title="Remover imagem">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── CAMERA TAB ── -->
+        <div id="ocr-panel-cam" style="display:none">
+          <div class="cam-viewport" id="cam-viewport">
+            <video id="cam-video" class="cam-video" autoplay playsinline muted></video>
+            <!-- Card guide overlay -->
+            <div class="cam-guide">
+              <div class="cam-guide-card">
+                <div class="cam-guide-corner tl"></div>
+                <div class="cam-guide-corner tr"></div>
+                <div class="cam-guide-corner bl"></div>
+                <div class="cam-guide-corner br"></div>
+                <span class="cam-guide-label" id="cam-guide-label">Posicione o cartão aqui</span>
+              </div>
+            </div>
+            <!-- Canvas hidden, used for frame capture -->
+            <canvas id="cam-canvas" style="display:none"></canvas>
+          </div>
+          <div class="cam-controls">
+            <button type="button" class="btn-primary" id="btn-cam-start">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              Ligar câmera
+            </button>
+            <button type="button" class="btn-cam-capture" id="btn-cam-capture" style="display:none" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/></svg>
+              Capturar & Ler
+            </button>
+            <button type="button" class="btn-secondary" id="btn-cam-stop" style="display:none">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Parar
+            </button>
+          </div>
+        </div>
+
+        <!-- Shared status + result -->
+        <div class="ocr-status" id="ocr-status" style="display:none">
+          <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocr-progress-fill"></div></div>
+          <span class="ocr-status-text" id="ocr-status-text">Lendo cartão…</span>
+        </div>
+        <div class="ocr-result" id="ocr-result" style="display:none"></div>
+      </div>
+
       <!-- Form -->
       <form class="card-form" id="card-form" autocomplete="off">
         <h3 class="modal-title" id="modal-title">Novo Cartão</h3>
@@ -303,6 +394,7 @@
   <!-- ===== TOAST ===== -->
   <div id="toast" class="toast" aria-live="polite"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
