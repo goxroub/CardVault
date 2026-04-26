@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciador de Cartões</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#logoGrad)"/>
+          <rect x="4" y="9" width="24" height="15" rx="3" stroke="white" stroke-width="1.5" fill="none"/>
+          <rect x="4" y="13" width="24" height="4" fill="white" opacity="0.9"/>
+          <circle cx="24" cy="20" r="3" fill="white" opacity="0.5"/>
+          <circle cx="21" cy="20" r="3" fill="white" opacity="0.85"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4F46E5"/>
+              <stop offset="1" stop-color="#7C3AED"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>CardVault</span>
+      </div>
+      <div class="header-actions">
+        <!-- File status -->
+        <div id="file-status" class="file-status hidden">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="file-status-name">sem arquivo</span>
+        </div>
+        <button id="btn-change-file" class="btn-secondary hidden" title="Trocar arquivo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Arquivo</span>
+        </button>
+        <button id="btn-export-csv" class="btn-secondary" title="Exportar CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <span>CSV</span>
+        </button>
+        <button id="btn-add-card" class="btn-primary" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Cartão
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <!-- Dashboard Stats -->
+    <section class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value" id="stat-total">0</span>
+        <span class="stat-label">Cartões</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-active">0</span>
+        <span class="stat-label">Ativos</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="stat-hidden">0</span>
+        <span class="stat-label">Ocultos</span>
+      </div>
+      <div class="stat-divider"></div>
+      <!-- Total USD -->
+      <div class="stat-item">
+        <span class="stat-value usd" id="stat-total-usd">—</span>
+        <span class="stat-label">Total USD</span>
+      </div>
+      <div class="stat-divider"></div>
+      <!-- Total BRL -->
+      <div class="stat-item">
+        <span class="stat-value brl" id="stat-total-brl">—</span>
+        <span class="stat-label">Total BRL</span>
+      </div>
+      <div class="stat-divider"></div>
+      <!-- Cotação -->
+      <div class="stat-item cotacao-item">
+        <span class="stat-value cotacao-val" id="stat-cotacao">
+          <span class="cotacao-spinner" id="cotacao-spinner">⟳</span>
+        </span>
+        <span class="stat-label cotacao-label">
+          USD/BRL
+          <span id="cotacao-status" class="cotacao-status"></span>
+        </span>
+      </div>
+      <div class="stat-divider"></div>
+      <button id="btn-toggle-hidden" class="link-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="hidden-toggle-label">Ver cartões ocultos</span>
+      </button>
+    </section>
+
+    <!-- Active Cards -->
+    <section class="cards-section" id="section-active">
+      <div class="section-header">
+        <h2 class="section-title">Meus Cartões</h2>
+        <!-- View toggle -->
+        <div class="view-toggle" id="view-toggle" role="group" aria-label="Modo de visualização">
+          <button class="view-btn active" id="view-grid-btn" title="Visualização em grade" aria-pressed="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            Grade
+          </button>
+          <button class="view-btn" id="view-list-btn" title="Visualização em lista" aria-pressed="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Lista
+          </button>
+        </div>
+      </div>
+      <div class="cards-grid" id="cards-active-grid">
+        <div class="empty-state" id="empty-active">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.4"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <p>Nenhum cartão cadastrado ainda.</p>
+          <button class="btn-primary small" onclick="openModal()">Adicionar primeiro cartão</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hidden Cards -->
+    <section class="cards-section hidden" id="section-hidden">
+      <h2 class="section-title muted">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22"/></svg>
+        Cartões Ocultos
+      </h2>
+      <div class="cards-grid" id="cards-hidden-grid">
+        <div class="empty-state" id="empty-hidden">
+          <p style="opacity:.5;">Nenhum cartão oculto.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== MODAL ADD / EDIT ===== -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close-btn" aria-label="Fechar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <!-- Live card preview -->
+      <div class="preview-wrap">
+        <div class="credit-card preview-card" id="preview-card">
+          <div class="card-shine"></div>
+          <div class="card-top">
+            <div class="card-chip">
+              <div class="chip-lines"></div>
+            </div>
+            <div class="card-brand">
+              <svg class="visa-logo" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+                <text x="0" y="18" font-family="Arial" font-size="22" font-weight="bold" font-style="italic" fill="white">VISA</text>
+              </svg>
+            </div>
+          </div>
+          <div class="card-number-display" id="prev-number">•••• •••• •••• ••••</div>
+          <div class="card-bottom">
+            <div class="card-info-group">
+              <span class="card-label">TITULAR</span>
+              <span class="card-value" id="prev-name">SEU NOME</span>
+            </div>
+            <div class="card-info-group">
+              <span class="card-label">VALIDADE</span>
+              <span class="card-value" id="prev-expiry">MM/AA</span>
+            </div>
+            <div class="card-info-group cvv-group">
+              <span class="card-label">CVV</span>
+              <span class="card-value" id="prev-cvv">•••</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form class="card-form" id="card-form" autocomplete="off">
+        <h3 class="modal-title" id="modal-title">Novo Cartão</h3>
+        <input type="hidden" id="edit-id" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-name">Nome do Titular</label>
+            <input type="text" id="f-name" placeholder="FULANO DA SILVA" maxlength="26" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-number">Número do Cartão</label>
+            <input type="text" id="f-number" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="form-row cols-3">
+          <div class="form-group">
+            <label for="f-expiry">Validade</label>
+            <input type="text" id="f-expiry" placeholder="MM/AA" maxlength="5" inputmode="numeric" />
+          </div>
+          <div class="form-group">
+            <label for="f-cvv">CVV</label>
+            <input type="text" id="f-cvv" placeholder="•••" maxlength="4" inputmode="numeric" />
+          </div>
+          <div class="form-group">
+            <label for="f-color">Cor</label>
+            <select id="f-color">
+              <option value="blue">Azul</option>
+              <option value="dark">Escuro</option>
+              <option value="violet">Violeta</option>
+              <option value="green">Verde</option>
+              <option value="gold">Dourado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-balance">Saldo Disponível (US$)</label>
+            <input type="text" id="f-balance" placeholder="0.00" inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <label for="f-limit">Limite Total (US$)</label>
+            <input type="text" id="f-limit" placeholder="0.00" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-link">Link do Cartão</label>
+            <input type="url" id="f-link" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-reward">Reward ID</label>
+            <input type="text" id="f-reward" placeholder="ID do programa de recompensas" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-notes">Observações</label>
+            <textarea id="f-notes" placeholder="Notas extras sobre o cartão..." rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-primary" id="btn-save">Salvar Cartão</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== ONBOARDING OVERLAY ===== -->
+  <div class="onboard-overlay" id="onboard-overlay">
+    <div class="onboard-box">
+      <div class="onboard-icon">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="11" x2="12" y2="17"/>
+          <line x1="9" y1="14" x2="15" y2="14"/>
+        </svg>
+      </div>
+      <h2 class="onboard-title">Bem-vindo ao CardVault</h2>
+      <p class="onboard-desc">
+        Seus dados ficam salvos em um arquivo <strong>.json</strong> no seu computador.
+        Escolha um arquivo existente ou crie um novo para começar.
+      </p>
+      <div class="onboard-actions">
+        <button id="btn-open-file" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          Abrir arquivo existente
+        </button>
+        <button id="btn-new-file" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Criar novo arquivo
+        </button>
+      </div>
+      <p id="onboard-error" class="onboard-error hidden"></p>
+      <p class="onboard-note">
+        ⚠️ Funciona em <strong>Chrome</strong> e <strong>Edge</strong>. Firefox não suporta escrita direta em arquivos.
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
